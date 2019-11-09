@@ -31,12 +31,20 @@ init([]) ->
                  period => 1},
 
     Children = [#{ id  => parking_lot_ticket_server, 
-    start    => {parking_lot_ticket_server, start_link, []},
+    start    => {parking_lot_free_slot_server, start_link, []},
     restart  => permanent,
     shutdown => 5000,
     type     => worker,
     modules  => [parking_lot_ticket_server]
-    }],
+    },
+    #{ id  => parking_lot_allocation_server, 
+    start    => {parking_lot_allocation_server, start_link, []},
+    restart  => permanent,
+    shutdown => 5000,
+    type     => worker,
+    modules  => [parking_lot_allocation_server]
+    }
+    ],
 
     {ok, {SupFlags, Children}}.
 
