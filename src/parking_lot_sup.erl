@@ -29,7 +29,15 @@ init([]) ->
     SupFlags = #{strategy => one_for_all,
                  intensity => 0,
                  period => 1},
-    ChildSpecs = [],
-    {ok, {SupFlags, ChildSpecs}}.
+
+    Children = [#{ id  => parking_lot_ticket_server, 
+    start    => {parking_lot_ticket_server, start_link, []},
+    restart  => permanent,
+    shutdown => 5000,
+    type     => worker,
+    modules  => [parking_lot_ticket_server]
+    }],
+
+    {ok, {SupFlags, Children}}.
 
 %% internal functions
