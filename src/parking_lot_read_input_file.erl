@@ -13,4 +13,21 @@ into_list( {error, _Error}, _IO, Acc ) -> lists:reverse( Acc );
 into_list( Line, IO, Acc ) -> 
         LineTmp = string:strip(Line, right, $\n),
         StringTokens = string:tokens(LineTmp, " "),
-        into_list(io:get_line(IO, ''), IO, [StringTokens | Acc] ).
+        Command = parse_command(StringTokens),
+        into_list(io:get_line(IO, ''), IO, [Command | Acc] ).
+
+
+parse_command(["create_parking_lot", SlotsStr])->
+        {SlotsInt, _} = string:to_integer(SlotsStr),
+        ["create_parking_lot", SlotsInt];
+
+parse_command(["leave", SlotNumberStr])->
+        {SlotNumberInt, _} = string:to_integer(SlotNumberStr),
+        ["leave", SlotNumberInt];
+
+parse_command(Command)->
+        Command.
+
+
+
+

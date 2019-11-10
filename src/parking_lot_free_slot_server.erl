@@ -31,27 +31,24 @@ get_free_slot()->
     
 %% Asynchronous call
 add_free_slot(SlotNumber)->
-    {SlotNumberInt, _ }  = string:to_integer(SlotNumber),
-    gen_server:cast(?MODULE, {add_free_slot, SlotNumberInt}).  
+    gen_server:cast(?MODULE, {add_free_slot, SlotNumber}).  
 
 
 %%% Server functions
 init([]) ->
-    ets:new(free_slots, [ordered_set, named_table]),
+    create_ets_table(),
     {ok, #state{}}.
 
-handle_call({load_free_slots, Slots}, _From, State) ->
-    {SlotsInt, _ } = string:to_integer(Slots),   
-    [ets:insert(free_slots,{Slot})||Slot<-lists:seq(1,SlotsInt)],
-    {reply, "Created a parking lot with "++Slots++" slots", State};
+handle_call({load_free_slots, Slots}, _From, State) ->  
+    create_slots(Slots),
+    {reply, reply("Created a parking lot with ", Slots, " slots"), State};
 
 handle_call(get_free_slot, _From, State) ->
-    FreeSlot=ets:first(free_slots),
-    ets:delete(free_slots,FreeSlot),
-    {reply, integer_to_list(FreeSlot), State}.
+    {ok, FreeSlot} = find_free_slot(),
+    {reply, FreeSlot, State}.
 
 handle_cast({add_free_slot, SlotNumber}, State) ->
-    ets:insert(free_slots, {SlotNumber}),
+    re_add_free_slot(SlotNumber),
     {noreply, State};
 
 handle_cast(_Msg, State) ->
@@ -67,3 +64,23 @@ code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 %% Internal functions
+
+create_ets_table()->
+    ets:new(free_slots, [ordered_set, named_table]).
+
+create_slots(Slots)->
+    [ets:insert(free_slots,{Slot})||Slot<-lists:seq(1,Slots)].
+
+find_free_slot()->
+    FreeSlot=ets:first(free_slots),
+    ets:delete(free_slots, FreeSlot),
+    {ok, FreeSlot}.
+
+re_add_free_slot(SlotNumber)->
+    ets:insert(free_slots, {SlotNumber}).
+
+
+reply(Message, Value)->
+        Message ++ integer_to_list(Value).
+reply(Message1, Value, Message2) ->
+        Message1 ++ integer_to_list(Value) ++ Message2.
