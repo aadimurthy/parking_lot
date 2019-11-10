@@ -1,5 +1,4 @@
 -module(parking_lot_allocation_server).
-
 -behaviour(gen_server).
 
 -export([start_link/0,
@@ -35,12 +34,12 @@ init([]) ->
 
 handle_call({allocate, SlotNumber}, _From, State) ->
     ets:insert(filled_slots,{SlotNumber}),
-    {reply, ok, State};
+    {reply, "Allocated slot number "++SlotNumber, State};
 
 handle_call({make_free, SlotNumber}, _From, State) ->
     ets:delete(filled_slots,{SlotNumber}),
     parking_lot_free_slot_server:add_free_slot(SlotNumber),
-    {reply, ok, State}.
+    {reply, "Slot number "++SlotNumber++" is free", State}.
 
 handle_cast(_Msg, State) ->
     {noreply, State}.

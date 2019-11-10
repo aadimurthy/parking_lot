@@ -4,7 +4,8 @@
 
 -export([start_link/0,
          get_free_slot/0,
-         add_free_slot/1]).
+         add_free_slot/1,
+         load_free_slots/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -19,6 +20,11 @@
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
+
+load_free_slots(Slots)->
+        [ets:insert(free_slots,{Slot})||Slot<-lists:seq(1,Slots)],
+        "Created a parking lot with "++Slots++" slots".
+
 %% Synchronous call
 get_free_slot()->
     gen_server:call(?MODULE, get_free_slot).
@@ -31,7 +37,6 @@ add_free_slot(SlotNumber)->
 %%% Server functions
 init([]) ->
     ets:new(free_slots, [ordered_set, named_table]),
-    [ets:insert(free_slots,{Slot})||Slot<-lists:seq(1,9)],
     {ok, #state{}}.
 
 handle_call(get_free_slot, _From, State) ->
