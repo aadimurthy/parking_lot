@@ -12,15 +12,15 @@ execute_commands()->
 execute(["create_parking_lot", Slots]) ->
     parking_lot_free_slot_server:load_free_slots(Slots);               
 
-execute(["park", RegNumber]) ->
+execute(["park", RegNumber, Colour]) ->
    FreeSlot = parking_lot_free_slot_server:get_free_slot(),
-   parking_lot_allocation_server:allocate(FreeSlot);
+   parking_lot_allocation_server:allocate(FreeSlot, RegNumber, Colour);
 
 execute(["leave", SlotNumber])->
     parking_lot_allocation_server:remove(SlotNumber);
 
 execute(["status"])->
-    "ok";
+    parking_lot_allocation_server:status();
 
 execute(["slot_numbers_for_cars_with_colour",Colour]) ->
     "ok";
