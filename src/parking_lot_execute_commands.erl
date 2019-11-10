@@ -1,12 +1,14 @@
 -module(parking_lot_execute_commands).
 -export([execute_commands/0]).
+-define(INPUTFILE, os:getenv("INPUTFILE")).
 
 execute_commands()->
     CommandList = 
-        parking_lot_read_input_file:into_list("/Users/aadi/parking_lot/file_inputs.txt"),
+        parking_lot_read_input_file:into_list(?INPUTFILE),
         lists:foreach(
             fun(Command)-> io:format("~s",[execute(Command)]) end, 
-                 CommandList).         
+                 CommandList),
+        io:format("~s~n",[""]).                
 
 
 execute(["create_parking_lot", Slots]) ->
