@@ -1,5 +1,5 @@
 # !/bin/bash 
   
-# A simple bash script to move up to desired directory level directly
 
+./rebar3 clean
 ./rebar3 compile

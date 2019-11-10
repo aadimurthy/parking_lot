@@ -4,7 +4,12 @@
 
 execute_commands()->
     CommandList = 
-        parking_lot_read_input_file:into_list(?INPUTFILE),
+        case ?INPUTFILE of
+           false ->
+                parking_lot_read_input_file:into_list("file_inputs.txt");
+            Value ->
+                parking_lot_read_input_file:into_list(Value)
+        end,
         lists:foreach(
             fun(Command)-> io:format("~s",[execute(Command)]) end, 
                  CommandList),
