@@ -23,7 +23,7 @@ start_link() ->
 
 %% Synchronous call
 allocate('$end_of_table', _,  _)->
-   "Sorry, parking lot is full";
+   "\nSorry, parking lot is full";
 
 allocate(SlotNumber, RegNumber, Colour)->
     gen_server:call(?MODULE, {allocate, {SlotNumber, RegNumber, Colour}}).
@@ -116,26 +116,34 @@ get_status()->
 
 
 reply(Message, Value)->
-        Message ++ integer_to_list(Value).
+       "\n" ++ Message ++ integer_to_list(Value).
 reply(Message1, Value, Message2) ->
-        Message1 ++ integer_to_list(Value) ++ Message2.
+       "\n" ++ Message1 ++ integer_to_list(Value) ++ Message2.
+
+
+reply_group([])->
+    "\nNot found";
 
 reply_group(Items) ->
     lists:foldl(
         fun(Item, Acc)->
          Acc++hd(Item)++", "
-        end,[], Items).
+        end,"\n", Items).
+
+
+reply_slots_group([])->
+    "\nNot found";
 
 reply_slots_group(Items) ->
     lists:foldl(
        fun(Item, Acc)->
          Acc++integer_to_list(hd(Item))++", "
-       end,[], Items).
+       end,"\n", Items).
 
 
 reply_status(Status)->
     lists:foldl(
         fun({SlotNumber, RegNumber, Colour}=Row, Heading)-> 
-           Heading++integer_to_list(SlotNumber)++"\t"++RegNumber++"\t"++Colour++"\n"
+           Heading++"\n"++integer_to_list(SlotNumber)++"\t\t"++RegNumber++"\t\t"++Colour
         end,
-       "Slot No.\tRegistration No\tColour\n",Status).
+       "\nSlot No.\tRegistration No\t\tColour",Status).

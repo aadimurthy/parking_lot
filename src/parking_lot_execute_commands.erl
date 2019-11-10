@@ -4,9 +4,9 @@
 execute_commands()->
     CommandList = 
         parking_lot_read_input_file:into_list("/Users/aadi/parking_lot/file_inputs.txt"),
-        lists:map(
-            fun(Command)-> execute(Command)++"\n" end, 
-                 CommandList).
+        lists:foreach(
+            fun(Command)-> io:format("~s",[execute(Command)]) end, 
+                 CommandList).         
 
 
 execute(["create_parking_lot", Slots]) ->
