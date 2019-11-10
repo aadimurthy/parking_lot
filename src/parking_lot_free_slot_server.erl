@@ -80,7 +80,5 @@ re_add_free_slot(SlotNumber)->
     ets:insert(free_slots, {SlotNumber}).
 
 
-reply(Message, Value)->
-    "\n" ++ Message ++ integer_to_list(Value).
 reply(Message1, Value, Message2) ->
     "\n" ++ Message1 ++ integer_to_list(Value) ++ Message2.

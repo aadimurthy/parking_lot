@@ -2,7 +2,7 @@
 -module(parking_lot_read_input_file).
 -export( [into_list/1] ).
  
-into_list( File ) ->
+into_list(File) ->
         {ok, IO} = file:open( File, [read] ),
         %Line = string:strip(io:get_line(IO, ''), right, $\n),
         into_list(io:get_line(IO, ''), IO, [] ).
