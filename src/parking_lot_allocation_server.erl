@@ -67,11 +67,11 @@ handle_call({group_reg_number_with, Colour}, _From, State) ->
 
 handle_call({group_slots_by, {colour, Colour}}, _From, State) ->
     {ok, Slots} = get_slots_by({colour, Colour}),
-    {reply, reply_slots_group(Slots), State};
+    {reply, reply_group(Slots), State};
 
 handle_call({group_slots_by, {reg_number, RegNumber}}, _From, State) ->
     {ok, Slots} = get_slots_by({reg_number, RegNumber}),
-    {reply, reply_slots_group(Slots), State};
+    {reply, reply_group(Slots), State};
 
 handle_call(status, _From, State) ->
     {ok, Status} = get_status(),
@@ -124,21 +124,27 @@ reply(Message1, Value, Message2) ->
 reply_group([])->
     "\nNot found";
 
+reply_group([Item]) when is_integer(hd(Item))->
+     "\n"++integer_to_list(hd(Item));
+
+reply_group([Item])->
+     "\n"++Item;
+
 reply_group(Items) ->
-    lists:foldl(
-        fun(Item, Acc)->
-         Acc++hd(Item)++", "
-        end,"\n", Items).
+    reply_group_s(Items, []).
 
+reply_group_s([Item],Acc) when is_integer(hd(Item))->
+    "\n"++Acc++", "++integer_to_list(hd(Item));
 
-reply_slots_group([])->
-    "\nNot found";
+reply_group_s([Item],Acc)->
+    "\n"++Acc++", "++Item;
 
-reply_slots_group(Items) ->
-    lists:foldl(
-       fun(Item, Acc)->
-         Acc++integer_to_list(hd(Item))++", "
-       end,"\n", Items).
+reply_group_s([Item1, Item2|T],Acc) when is_integer(hd(Item1)) ->
+    reply_group_s(T,integer_to_list(hd(Item1))++", "++integer_to_list(hd(Item2)));
+
+reply_group_s([Item1, Item2|T],Acc) ->
+   reply_group_s(T,Item1++", "++Item2).   
+
 
 
 reply_status(Status)->
