@@ -4,6 +4,8 @@
 -export([start_link/0,
          allocate/3,
          remove/1,
+         group_reg_number_with/1,
+         group_slots_with/1,
          status/0]).
 
 %% gen_server callbacks
@@ -31,6 +33,17 @@ remove(SlotNumber)->
     gen_server:call(?MODULE, {make_free, SlotNumber}).
 
 %% Synchronous call
+group_reg_number_with(Colour)->
+    gen_server:call(?MODULE, {group_reg_number_with, Colour}).
+
+%% Synchronous call
+group_slots_with({colour, Colour})->
+    gen_server:call(?MODULE, {group_slots_by, {colour, Colour}});
+
+group_slots_with({reg_number, RegNumber})->
+    gen_server:call(?MODULE, {group_slots_by, {reg_number, RegNumber}}).
+
+%% Synchronous call
 status()->
     gen_server:call(?MODULE, status).
 
@@ -48,6 +61,18 @@ handle_call({make_free, SlotNumber}, _From, State) ->
     free_slot_from_allocation(SlotNumber),
     {reply, reply("Slot number ", SlotNumber , " is free"), State};
 
+handle_call({group_reg_number_with, Colour}, _From, State) ->
+    {ok, RegNumList} = get_reg_numbers_by(Colour),
+    {reply, reply_group(RegNumList), State};   
+
+handle_call({group_slots_by, {colour, Colour}}, _From, State) ->
+    {ok, Slots} = get_slots_by({colour, Colour}),
+    {reply, reply_slots_group(Slots), State};
+
+handle_call({group_slots_by, {reg_number, RegNumber}}, _From, State) ->
+    {ok, Slots} = get_slots_by({reg_number, RegNumber}),
+    {reply, reply_slots_group(Slots), State};
+
 handle_call(status, _From, State) ->
     {ok, Status} = get_status(),
     {reply, reply_status(Status), State}.
@@ -64,7 +89,9 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
+
 %% Internal functions
+
 create_ets_table()->
     ets:new(filled_slots, [ordered_set, named_table]).
 
@@ -75,6 +102,15 @@ free_slot_from_allocation(SlotNumber)->
     ets:delete(filled_slots, SlotNumber),
     parking_lot_free_slot_server:add_free_slot(SlotNumber).
 
+get_reg_numbers_by(Colour)->
+    {ok, ets:match(filled_slots,{'_', '$1', Colour})}.
+
+get_slots_by({colour, Colour})->
+    {ok, ets:match(filled_slots,{'$1', '_', Colour})};
+
+get_slots_by({reg_number, RegNumber})->
+    {ok, ets:match(filled_slots,{'$1', RegNumber, '_'})}.
+
 get_status()->
     {ok, ets:tab2list(filled_slots)}.
 
@@ -83,6 +119,19 @@ reply(Message, Value)->
         Message ++ integer_to_list(Value).
 reply(Message1, Value, Message2) ->
         Message1 ++ integer_to_list(Value) ++ Message2.
+
+reply_group(Items) ->
+    lists:foldl(
+        fun(Item, Acc)->
+         Acc++hd(Item)++", "
+        end,[], Items).
+
+reply_slots_group(Items) ->
+    lists:foldl(
+       fun(Item, Acc)->
+         Acc++integer_to_list(hd(Item))++", "
+       end,[], Items).
+
 
 reply_status(Status)->
     lists:foldl(

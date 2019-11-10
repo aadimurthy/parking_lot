@@ -22,11 +22,14 @@ execute(["leave", SlotNumber])->
 execute(["status"])->
     parking_lot_allocation_server:status();
 
-execute(["slot_numbers_for_cars_with_colour",Colour]) ->
-    "ok";
+execute(["registration_numbers_for_cars_with_colour", Colour]) ->
+    parking_lot_allocation_server:group_reg_number_with(Colour);
+
+execute(["slot_numbers_for_cars_with_colour", Colour]) ->
+    parking_lot_allocation_server:group_slots_with({colour, Colour});
 
 execute(["slot_number_for_registration_number", RegNumber]) ->
-    "ok";
+    parking_lot_allocation_server:group_slots_with({reg_number, RegNumber});
 
 execute(_) ->
     "not_supported".
