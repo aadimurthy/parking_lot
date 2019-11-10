@@ -1,5 +1,5 @@
 -module(parking_lot_execute_commands).
--export([]).
+-export([execute_commands/0]).
 
 execute_commands()->
     CommandList = 
@@ -20,16 +20,16 @@ execute(["leave", SlotNumber])->
     parking_lot_allocation_server:remove(SlotNumber);
 
 execute(["status"])->
-    ok;
+    "ok";
 
 execute(["slot_numbers_for_cars_with_colour",Colour]) ->
-    ok;
+    "ok";
 
 execute(["slot_number_for_registration_number", RegNumber]) ->
-    ok;
+    "ok";
 
 execute(_) ->
-    not_supported.
+    "not_supported".
 
 
 

@@ -37,8 +37,9 @@ handle_call({allocate, SlotNumber}, _From, State) ->
     {reply, "Allocated slot number "++SlotNumber, State};
 
 handle_call({make_free, SlotNumber}, _From, State) ->
-    ets:delete(filled_slots,{SlotNumber}),
-    parking_lot_free_slot_server:add_free_slot(SlotNumber),
+    {SlotNumberInt, _ }  = string:to_integer(SlotNumber),
+    ets:delete(filled_slots,{SlotNumberInt}),
+    parking_lot_free_slot_server:add_free_slot(SlotNumberInt),
     {reply, "Slot number "++SlotNumber++" is free", State}.
 
 handle_cast(_Msg, State) ->
