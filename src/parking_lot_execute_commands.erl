@@ -15,7 +15,7 @@ execute_commands()->
                  CommandList),
         io:format("~s~n",[""]).                
 
-
+% Commands API
 execute(["create_parking_lot", Slots]) ->
     parking_lot_free_slot_server:load_free_slots(Slots);               
 

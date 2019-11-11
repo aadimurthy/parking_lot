@@ -92,7 +92,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% Internal functions
 
-create_ets_table()->
+create_ets_table()-> % created order set which is equivalent of Binary search algorithm ()
     ets:new(filled_slots, [ordered_set, named_table]).
 
 allocate_slot({_SlotNumber, _RegNumber, _Colour} = IData)->
