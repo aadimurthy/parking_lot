@@ -53,7 +53,7 @@ init([]) ->
     create_ets_table(),
     {ok, #state{}}.
 
-handle_call({allocate, {SlotNumber, RegNumber, Colour} = IData}, _From, State) ->
+handle_call({allocate, {SlotNumber, _RegNumber, _Colour} = IData}, _From, State) ->
     allocate_slot(IData),
     {reply, reply("Allocated slot number ", SlotNumber), State};
 
@@ -95,7 +95,7 @@ code_change(_OldVsn, State, _Extra) ->
 create_ets_table()->
     ets:new(filled_slots, [ordered_set, named_table]).
 
-allocate_slot({SlotNumber, RegNumber, Colour} = IData)->
+allocate_slot({_SlotNumber, _RegNumber, _Colour} = IData)->
     ets:insert(filled_slots, IData).
 
 free_slot_from_allocation(SlotNumber)->
@@ -139,17 +139,17 @@ reply_group_s([Item],Acc) when is_integer(hd(Item))->
 reply_group_s([Item],Acc)->
     "\n"++Acc++", "++Item;
 
-reply_group_s([Item1, Item2|T],Acc) when is_integer(hd(Item1)) ->
+reply_group_s([Item1, Item2|T],_Acc) when is_integer(hd(Item1)) ->
     reply_group_s(T,integer_to_list(hd(Item1))++", "++integer_to_list(hd(Item2)));
 
-reply_group_s([Item1, Item2|T],Acc) ->
+reply_group_s([Item1, Item2|T],_Acc) ->
    reply_group_s(T,Item1++", "++Item2).   
 
 
 
 reply_status(Status)->
     lists:foldl(
-        fun({SlotNumber, RegNumber, Colour}=Row, Heading)-> 
+        fun({SlotNumber, RegNumber, Colour}, Heading)-> 
            Heading++"\n"++integer_to_list(SlotNumber)++"\t\t"++RegNumber++"\t\t"++Colour
         end,
        "\nSlot No.\tRegistration No\t\tColour",Status).
