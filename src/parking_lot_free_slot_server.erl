@@ -81,4 +81,4 @@ re_add_free_slot(SlotNumber)->
 
 
 reply(Message1, Value, Message2) ->
-    "\n" ++ Message1 ++ integer_to_list(Value) ++ Message2.
+   ["\n", Message1, integer_to_list(Value), Message2].

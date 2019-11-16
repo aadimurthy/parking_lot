@@ -39,7 +39,7 @@ execute(["slot_number_for_registration_number", RegNumber]) ->
     parking_lot_allocation_server:group_slots_with({reg_number, RegNumber});
 
 execute(_) ->
-    "not_supported".
+    "\nnot_supported".
 
 
 

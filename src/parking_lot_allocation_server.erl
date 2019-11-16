@@ -116,40 +116,43 @@ get_status()->
 
 
 reply(Message, Value)->
-       "\n" ++ Message ++ integer_to_list(Value).
+       ["\n", Message, integer_to_list(Value)].
 reply(Message1, Value, Message2) ->
-       "\n" ++ Message1 ++ integer_to_list(Value) ++ Message2.
+       ["\n", Message1, integer_to_list(Value), Message2].
 
 
 reply_group([])->
     "\nNot found";
 
 reply_group([Item]) when is_integer(hd(Item))->
-     "\n"++integer_to_list(hd(Item));
+     ["\n", integer_to_list(hd(Item))];
 
 reply_group([Item])->
-     "\n"++Item;
+     ["\n", Item];
 
 reply_group(Items) ->
     reply_group_s(Items, []).
 
+reply_group_s([],Acc) ->
+  ["\n", Acc];
+
 reply_group_s([Item],Acc) when is_integer(hd(Item))->
-    "\n"++Acc++", "++integer_to_list(hd(Item));
+    ["\n", Acc, ", ", integer_to_list(hd(Item))];
 
 reply_group_s([Item],Acc)->
-    "\n"++Acc++", "++Item;
+    ["\n", Acc, ", ", Item];
 
-reply_group_s([Item1, Item2|T],_Acc) when is_integer(hd(Item1)) ->
-    reply_group_s(T,integer_to_list(hd(Item1))++", "++integer_to_list(hd(Item2)));
+reply_group_s([Item1, Item2|T],Acc) when is_integer(hd(Item1)) ->
+    reply_group_s(T,[integer_to_list(hd(Item1)), ", ", integer_to_list(hd(Item2))|Acc]);
 
-reply_group_s([Item1, Item2|T],_Acc) ->
-   reply_group_s(T,Item1++", "++Item2).   
+reply_group_s([Item1, Item2|T],Acc) ->
+   reply_group_s(T,[Item1, ", ", Item2|Acc]).
 
 
 
 reply_status(Status)->
     lists:foldl(
         fun({SlotNumber, RegNumber, Colour}, Heading)-> 
-           Heading++"\n"++integer_to_list(SlotNumber)++"\t\t"++RegNumber++"\t\t"++Colour
+           [Heading, "\n", integer_to_list(SlotNumber), "\t\t", RegNumber,"\t\t",Colour]
         end,
        "\nSlot No.\tRegistration No\t\tColour",Status).
