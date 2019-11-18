@@ -25,8 +25,11 @@ start_link() ->
 allocate('$end_of_table', _,  _)->
    "\nSorry, parking lot is full";
 
-allocate(SlotNumber, RegNumber, Colour)->
-    gen_server:call(?MODULE, {allocate, {SlotNumber, RegNumber, Colour}}).
+allocate(SlotNumber, RegNumber, Colour) when is_integer(SlotNumber)->
+    gen_server:call(?MODULE, {allocate, {SlotNumber, RegNumber, Colour}});
+
+allocate(_Value, _,  _)->
+  "\nParking Failed".
     
 %% Synchronous call
 remove(SlotNumber)->
@@ -124,8 +127,8 @@ reply(Message1, Value, Message2) ->
 reply_group([])->
     "\nNot found";
 
-reply_group([Item]) when is_integer(hd(Item))->
-     ["\n", integer_to_list(hd(Item))];
+reply_group([[Item]]) when is_integer(Item)->
+     ["\n", integer_to_list(Item)];
 
 reply_group([Item])->
      ["\n", Item];
@@ -136,14 +139,14 @@ reply_group(Items) ->
 reply_group_s([],Acc) ->
   ["\n", Acc];
 
-reply_group_s([Item],Acc) when is_integer(hd(Item))->
-    ["\n", Acc, ", ", integer_to_list(hd(Item))];
+reply_group_s([[Item]],Acc) when is_integer(Item)->
+    ["\n", Acc, ", ", integer_to_list(Item)];
 
 reply_group_s([Item],Acc)->
     ["\n", Acc, ", ", Item];
 
-reply_group_s([Item1, Item2|T],Acc) when is_integer(hd(Item1)) ->
-    reply_group_s(T,[integer_to_list(hd(Item1)), ", ", integer_to_list(hd(Item2))|Acc]);
+reply_group_s([[Item1], [Item2]|T],Acc) when is_integer(Item1) ->
+    reply_group_s(T,[integer_to_list(Item1), ", ", integer_to_list(Item2)|Acc]);
 
 reply_group_s([Item1, Item2|T],Acc) ->
    reply_group_s(T,[Item1, ", ", Item2|Acc]).
