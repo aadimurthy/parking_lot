@@ -67,6 +67,17 @@ Whenever vehicle arrives, it gets the next available and nearest free slot from 
 2) Switch from ETS to Mnesia for data persistence
 3) Off load free slot code to different module and also one could able to write cusom moduel to inject his own algorithm for sot allocation  
 4) Dockerize the service. 
+
+
+To Do :
+
+1) Make Parking lot to handle multiple Lots not just single
+   -> This may need code changes like 
+     1) Ets table to have tuples that have multiple lots with respetive slots 
+     2) Sever API
+     
+2) U     
+
    
 
 

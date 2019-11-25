@@ -26,7 +26,7 @@ end_per_suite(_Config) ->
 
 init_per_testcase(_, Config) ->
     parking_lot_execute_commands:execute(["create_parking_lot", 5]),
-    Config.
+  Config.
 
 all() ->
 [create_parking_lot_test, test_parking_command, test_leave_command, test_reg_number_grouping, test_slot_number_grouping,

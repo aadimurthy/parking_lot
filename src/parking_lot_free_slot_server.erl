@@ -39,9 +39,13 @@ init([]) ->
     create_ets_table(),
     {ok, #state{}}.
 
-handle_call({load_free_slots, Slots}, _From, State) ->  
-    create_slots(Slots),
-    {reply, reply("Created a parking lot with ", Slots, " slots"), State};
+handle_call({load_free_slots, Slots}, _From, State) ->
+  case length(ets:tab2list(free_slots)) of
+    0 -> create_slots(Slots),
+      {reply, reply("Created a parking lot with ", Slots, " slots"), State};
+    Value ->
+      {reply, reply("A parking lot already exists with ", Value, " slots"), State}
+  end;
 
 handle_call(get_free_slot, _From, State) ->
     {ok, FreeSlot} = find_free_slot(),
