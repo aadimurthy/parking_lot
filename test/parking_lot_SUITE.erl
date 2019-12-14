@@ -1,7 +1,5 @@
 -module(parking_lot_SUITE).
 -export([suite/0,
-         init_per_suite/1,
-         end_per_suite/1,
          all/0,
          create_parking_lot_test/1,
          test_parking_command/1,
@@ -16,17 +14,15 @@
 suite() ->
     [{timetrap,{seconds,120}}].
 
-init_per_suite(Config) ->
-    application:ensure_all_started(parking_lot),
-    Config.
+init_per_testcase(_, Config) ->
+     application:ensure_all_started(parking_lot), 
+     parking_lot_execute_commands:execute(["create_parking_lot", 5]),
+  Config.
 
-end_per_suite(_Config) ->
+end_per_testcase(_, Config) ->
     application:stop(parking_lot),
     ok.
 
-init_per_testcase(_, Config) ->
-    parking_lot_execute_commands:execute(["create_parking_lot", 5]),
-  Config.
 
 all() ->
 [create_parking_lot_test, test_parking_command, test_leave_command, test_reg_number_grouping, test_slot_number_grouping,
